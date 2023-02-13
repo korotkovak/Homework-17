@@ -9,10 +9,22 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    private var passwordView: PasswordView? {
+        guard isViewLoaded else { return nil }
+        return view as? PasswordView
     }
 
+    // MARK: - Leficycle
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupView()
+    }
+
+    // MARK: - Setup
+
+    private func setupView() {
+        view = PasswordView()
+        view.backgroundColor = .white
+    }
 }
-

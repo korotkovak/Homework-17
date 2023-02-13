@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		C177F8A8299A05E300D18532 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C177F8A7299A05E300D18532 /* AppDelegate.swift */; };
 		C177F8AA299A05E300D18532 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C177F8A9299A05E300D18532 /* SceneDelegate.swift */; };
-		C177F8AC299A05E300D18532 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C177F8AB299A05E300D18532 /* ViewController.swift */; };
+		C177F8AC299A05E300D18532 /* PasswordController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C177F8AB299A05E300D18532 /* PasswordController.swift */; };
 		C177F8B1299A05E500D18532 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C177F8B0299A05E500D18532 /* Assets.xcassets */; };
 		C177F8C1299A1C0E00D18532 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = C177F8C0299A1C0E00D18532 /* SnapKit */; };
 		C177F8C4299A252D00D18532 /* PasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C177F8C3299A252D00D18532 /* PasswordView.swift */; };
@@ -20,7 +20,7 @@
 		C177F8A4299A05E300D18532 /* Homework 17.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Homework 17.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C177F8A7299A05E300D18532 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C177F8A9299A05E300D18532 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		C177F8AB299A05E300D18532 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		C177F8AB299A05E300D18532 /* PasswordController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordController.swift; sourceTree = "<group>"; };
 		C177F8B0299A05E500D18532 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C177F8B5299A05E500D18532 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C177F8C3299A252D00D18532 /* PasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordView.swift; sourceTree = "<group>"; };
@@ -76,9 +76,8 @@
 		C177F8BC299A06C400D18532 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				C177F8C8299A6C7A00D18532 /* Scenes */,
 				C177F8C5299A357E00D18532 /* Extension */,
-				C177F8C2299A251C00D18532 /* View */,
-				C177F8BE299A06F900D18532 /* Controller */,
 				C177F8BD299A06F000D18532 /* App */,
 			);
 			path = Sources;
@@ -96,7 +95,7 @@
 		C177F8BE299A06F900D18532 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				C177F8AB299A05E300D18532 /* ViewController.swift */,
+				C177F8AB299A05E300D18532 /* PasswordController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -115,6 +114,15 @@
 				C177F8C6299A359B00D18532 /* String + extension.swift */,
 			);
 			path = Extension;
+			sourceTree = "<group>";
+		};
+		C177F8C8299A6C7A00D18532 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				C177F8C2299A251C00D18532 /* View */,
+				C177F8BE299A06F900D18532 /* Controller */,
+			);
+			path = Scenes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -193,7 +201,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C177F8C4299A252D00D18532 /* PasswordView.swift in Sources */,
-				C177F8AC299A05E300D18532 /* ViewController.swift in Sources */,
+				C177F8AC299A05E300D18532 /* PasswordController.swift in Sources */,
 				C177F8A8299A05E300D18532 /* AppDelegate.swift in Sources */,
 				C177F8C7299A359B00D18532 /* String + extension.swift in Sources */,
 				C177F8AA299A05E300D18532 /* SceneDelegate.swift in Sources */,

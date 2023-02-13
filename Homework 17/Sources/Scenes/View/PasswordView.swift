@@ -28,20 +28,32 @@ class PasswordView: UIView {
         textField.font = UIFont.systemFont(ofSize: 16)
         textField.borderStyle = .roundedRect
         textField.layer.cornerRadius = 6
+        textField.clearButtonMode = .whileEditing
+        textField.isSecureTextEntry = true
         return textField
     }()
 
     lazy var passwordEntryButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = .blue
+        button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 6
         button.setTitle("Password generation", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.titleLabel?.font =  UIFont.systemFont(ofSize: 16)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         return button
     }()
 
-    lazy var activityIndicator: UIActivityIndicatorView = {
+    lazy var stopButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = .systemRed
+        button.layer.cornerRadius = 6
+        button.setTitle("Stop generating", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        return button
+    }()
+
+    private lazy var activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
         indicator.isHidden = true
         return indicator
@@ -52,7 +64,7 @@ class PasswordView: UIView {
         stack.axis = .horizontal
         stack.alignment = .center
         stack.distribution = .fillProportionally
-        stack.spacing = 15
+        stack.spacing = 5
         stack.addArrangedSubview(passwordEntryButton)
         stack.addArrangedSubview(activityIndicator)
         return stack
@@ -73,20 +85,27 @@ class PasswordView: UIView {
     private func commonInit() {
         setupHierarchy()
         setupLayout()
+        setupKeyboard()
     }
 
     // MARK: - Setup
+
+    private func setupKeyboard() {
+        passwordTF.delegate = self
+        self.hideKeyboardWhenTappedAround()
+    }
 
     private func setupHierarchy() {
         addSubview(titleLabel)
         addSubview(passwordTF)
         addSubview(stack)
+        addSubview(stopButton)
     }
 
     private func setupLayout() {
 
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(self).offset(200)
+            make.top.equalTo(self).offset(150)
             make.left.equalTo(20)
             make.right.equalTo(-20)
         }
@@ -107,5 +126,47 @@ class PasswordView: UIView {
             make.left.equalTo(20)
             make.right.equalTo(-20)
         }
+
+        stopButton.snp.makeConstraints { make in
+            make.top.equalTo(stack.snp.bottom).offset(20)
+            make.left.equalTo(20)
+            make.right.equalTo(-20)
+            make.height.equalTo(44)
+        }
+    }
+
+    // MARK: - Action
+
+    func startPasswordGeneration() {
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+    }
+
+    func stopPasswordGeneration() {
+        DispatchQueue.main.async {
+            self.passwordTF.isSecureTextEntry = false
+            self.activityIndicator.stopAnimating()
+            self.activityIndicator.isHidden = true
+        }
+    }
+}
+
+// MARK: - Extension
+
+extension PasswordView: UITextFieldDelegate {
+
+    @objc func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.endEditing(true)
+        return false
+    }
+
+    private func hideKeyboardWhenTappedAround() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        self.addGestureRecognizer(tap)
+    }
+
+    @objc private func dismissKeyboard() {
+        self.endEditing(true)
     }
 }

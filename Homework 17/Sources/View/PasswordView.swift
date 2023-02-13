@@ -11,7 +11,7 @@ class PasswordView: UIView {
 
     // MARK: - UI Elements
 
-    private lazy var titleLabel: UILabel = {
+    lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Your password"
         label.textAlignment = .center
@@ -20,7 +20,7 @@ class PasswordView: UIView {
         return label
     }()
 
-    private lazy var passwordTF: UITextField = {
+    lazy var passwordTF: UITextField = {
         let textField = UITextField()
         textField.textColor = .black
         textField.textAlignment = .left
@@ -41,8 +41,9 @@ class PasswordView: UIView {
         return button
     }()
 
-    private lazy var activityIndicator: UIActivityIndicatorView = {
+    lazy var activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
+        indicator.isHidden = true
         return indicator
     }()
 
@@ -72,7 +73,6 @@ class PasswordView: UIView {
     private func commonInit() {
         setupHierarchy()
         setupLayout()
-        activityIndicator.startAnimating()
     }
 
     // MARK: - Setup

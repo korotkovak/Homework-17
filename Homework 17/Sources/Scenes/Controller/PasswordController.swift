@@ -7,27 +7,61 @@
 
 import UIKit
 
-class PasswordController: UIViewController {
+final class PasswordController: UIViewController {
 
     // MARK: - Property
-
-    private var isStartPasswordGeneration = true
 
     private lazy var passwordView: PasswordView = {
         PasswordView()
     }()
 
+    private var isStartPasswordGeneration = true
+
+    var isBlack: Bool = false {
+        didSet {
+            if isBlack {
+                view.backgroundColor = .black
+                passwordView.titleLabel.textColor = .white
+                passwordView.activityIndicator.color = .white
+                passwordView.generationPasswordLabel.textColor = .white
+            } else {
+                view.backgroundColor = .white
+                passwordView.titleLabel.textColor = .black
+                passwordView.activityIndicator.color = .black
+                passwordView.generationPasswordLabel.textColor = .black
+            }
+        }
+    }
+
+    // MARK: - Observers
+
+    var observerLabel: String = "" {
+        didSet {
+            DispatchQueue.main.async {
+                self.passwordView.generationPasswordLabel.text = self.observerLabel
+            }
+        }
+    }
+
+    var observerTitleLabel: String = "" {
+        didSet {
+            DispatchQueue.main.async {
+                self.passwordView.titleLabel.text = self.observerTitleLabel
+            }
+        }
+    }
+
     // MARK: - Leficycle
 
     override func loadView() {
         view = passwordView
-        passwordView.frame = view.bounds
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
         setupAction()
+        setupKeyboard()
     }
 
     // MARK: - Setup
@@ -36,31 +70,58 @@ class PasswordController: UIViewController {
         view.backgroundColor = .white
     }
 
+    private func setupKeyboard() {
+        passwordView.passwordTF.delegate = self
+        self.hideKeyboardWhenTappedAround()
+    }
+
     private func setupAction() {
-        passwordView.passwordEntryButton.addTarget(self, action: #selector(passwordGenerationButton), for: .touchUpInside)
-        passwordView.stopButton.addTarget(self, action: #selector(stopGenerationButton), for: .touchUpInside)
+        passwordView.passwordEntryButton.addTarget(self, action: #selector(startPasswordGenerationButton), for: .touchUpInside)
+        passwordView.stopButton.addTarget(self, action: #selector(stopPasswordGenerationButton), for: .touchUpInside)
+        passwordView.changeViewBackgroundButton.addTarget(self, action: #selector(changeViewBackgroundColor), for: .touchUpInside)
     }
 
     // MARK: - Action
 
-    @objc private func passwordGenerationButton() {
+    @objc private func changeViewBackgroundColor() {
+        isBlack.toggle()
+    }
 
-        isStartPasswordGeneration = true
+    @objc private func startPasswordGenerationButton() {
+        guard let password = passwordView.passwordTF.text else { return }
+        guard password != "" else { return }
 
-        let password = passwordView.passwordTF.text ?? ""
+        passwordView.activityIndicator.startAnimating()
+        observerTitleLabel = "Идет взлом"
 
-        if password != "" {
-            passwordView.startPasswordGeneration()
-
-            let queue = DispatchQueue.global(qos: .utility)
-            queue.async {
-                self.bruteForce(passwordToUnlock: password)
-            }
+        let queue = DispatchQueue(label: "bruteForce", qos: .background)
+        queue.async {
+            self.bruteForce(passwordToUnlock: password)
+            self.updateView()
         }
     }
 
-    @objc private func stopGenerationButton() {
+    @objc private func stopPasswordGenerationButton() {
         isStartPasswordGeneration = false
+        passwordView.activityIndicator.stopAnimating()
+
+        guard let password = passwordView.passwordTF.text else { return }
+        guard let titleLabel = passwordView.titleLabel.text else { return }
+
+        guard titleLabel == "Взломать пароль?" || titleLabel == "Пароль взломан \(password)" else {
+            observerTitleLabel = "Взлом остановлен"
+            return
+        }
+
+        updateView()
+    }
+
+    private func updateView() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.passwordView.passwordTF.isSecureTextEntry = true
+            self.observerTitleLabel = "Взломать пароль?"
+            self.observerLabel = ""
+        }
     }
 
     // MARK: - Generation Method
@@ -73,29 +134,23 @@ class PasswordController: UIViewController {
         while password != passwordToUnlock {
             if isStartPasswordGeneration {
                 password = generateBruteForce(password, fromArray: allowedCharacters)
+                observerLabel = password
 
-                DispatchQueue.main.async {
-                    self.passwordView.titleLabel.text = password
+                if password == passwordToUnlock {
+                    observerTitleLabel = "Пароль взломан \(password)"
+                    observerLabel = ""
+
+                    DispatchQueue.main.async {
+                        self.passwordView.activityIndicator.stopAnimating()
+                        self.passwordView.passwordTF.isSecureTextEntry = false
+                    }
                 }
-
-                print(password)
-
             } else {
                 password = ""
-
-                DispatchQueue.main.async {
-                    let password = self.passwordView.passwordTF.text ?? ""
-                    self.passwordView.titleLabel.text = "Password - \(password) not hacked"
-                }
-
+                isStartPasswordGeneration = true
                 break
             }
-
-            DispatchQueue.main.async {
-                self.passwordView.titleLabel.text = password
-            }
         }
-        passwordView.stopPasswordGeneration()
     }
 }
 
@@ -128,5 +183,23 @@ extension PasswordController {
         }
 
         return str
+    }
+}
+
+extension PasswordController: UITextFieldDelegate {
+
+    @objc func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        view.endEditing(true)
+        return false
+    }
+
+    private func hideKeyboardWhenTappedAround() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
     }
 }

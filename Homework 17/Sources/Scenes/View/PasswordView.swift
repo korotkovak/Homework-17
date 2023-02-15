@@ -7,13 +7,21 @@
 
 import UIKit
 
-class PasswordView: UIView {
+final class PasswordView: UIView {
 
     // MARK: - UI Elements
 
     lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Your password"
+        label.text = "Взломать пароль?"
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 24)
+        label.textColor = .black
+        return label
+    }()
+
+    lazy var generationPasswordLabel: UILabel = {
+        let label = UILabel()
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 24)
         label.textColor = .black
@@ -24,11 +32,10 @@ class PasswordView: UIView {
         let textField = UITextField()
         textField.textColor = .black
         textField.textAlignment = .left
-        textField.placeholder = "Your password"
+        textField.placeholder = "Нашите Ваш пароль"
         textField.font = UIFont.systemFont(ofSize: 16)
         textField.borderStyle = .roundedRect
         textField.layer.cornerRadius = 6
-        textField.clearButtonMode = .whileEditing
         textField.isSecureTextEntry = true
         return textField
     }()
@@ -37,7 +44,17 @@ class PasswordView: UIView {
         let button = UIButton()
         button.backgroundColor = .systemBlue
         button.layer.cornerRadius = 6
-        button.setTitle("Password generation", for: .normal)
+        button.setTitle("Взломать пароль", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        return button
+    }()
+
+    lazy var changeViewBackgroundButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = .systemOrange
+        button.layer.cornerRadius = 6
+        button.setTitle("Поменять цвет", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         return button
@@ -47,13 +64,13 @@ class PasswordView: UIView {
         let button = UIButton()
         button.backgroundColor = .systemRed
         button.layer.cornerRadius = 6
-        button.setTitle("Stop generating", for: .normal)
+        button.setTitle("Остановить взлом", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         return button
     }()
 
-    private lazy var activityIndicator: UIActivityIndicatorView = {
+    lazy var activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
         indicator.isHidden = true
         return indicator
@@ -67,6 +84,17 @@ class PasswordView: UIView {
         stack.spacing = 5
         stack.addArrangedSubview(passwordEntryButton)
         stack.addArrangedSubview(activityIndicator)
+        return stack
+    }()
+
+    private lazy var stackButton: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.alignment = .center
+        stack.distribution = .fillProportionally
+        stack.spacing = 14
+        stack.addArrangedSubview(changeViewBackgroundButton)
+        stack.addArrangedSubview(stopButton)
         return stack
     }()
 
@@ -85,27 +113,28 @@ class PasswordView: UIView {
     private func commonInit() {
         setupHierarchy()
         setupLayout()
-        setupKeyboard()
     }
 
     // MARK: - Setup
 
-    private func setupKeyboard() {
-        passwordTF.delegate = self
-        self.hideKeyboardWhenTappedAround()
-    }
-
     private func setupHierarchy() {
         addSubview(titleLabel)
+        addSubview(generationPasswordLabel)
         addSubview(passwordTF)
         addSubview(stack)
-        addSubview(stopButton)
+        addSubview(stackButton)
     }
 
     private func setupLayout() {
 
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(self).offset(150)
+            make.top.equalTo(self).offset(100)
+            make.left.equalTo(20)
+            make.right.equalTo(-20)
+        }
+
+        generationPasswordLabel.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(20)
             make.left.equalTo(20)
             make.right.equalTo(-20)
         }
@@ -127,46 +156,18 @@ class PasswordView: UIView {
             make.right.equalTo(-20)
         }
 
-        stopButton.snp.makeConstraints { make in
-            make.top.equalTo(stack.snp.bottom).offset(20)
-            make.left.equalTo(20)
-            make.right.equalTo(-20)
+        changeViewBackgroundButton.snp.makeConstraints { make in
             make.height.equalTo(44)
         }
-    }
 
-    // MARK: - Action
-
-    func startPasswordGeneration() {
-        activityIndicator.isHidden = false
-        activityIndicator.startAnimating()
-    }
-
-    func stopPasswordGeneration() {
-        DispatchQueue.main.async {
-            self.passwordTF.isSecureTextEntry = false
-            self.activityIndicator.stopAnimating()
-            self.activityIndicator.isHidden = true
+        stopButton.snp.makeConstraints { make in
+            make.height.equalTo(44)
         }
-    }
-}
 
-// MARK: - Extension
-
-extension PasswordView: UITextFieldDelegate {
-
-    @objc func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        self.endEditing(true)
-        return false
-    }
-
-    private func hideKeyboardWhenTappedAround() {
-        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        tap.cancelsTouchesInView = false
-        self.addGestureRecognizer(tap)
-    }
-
-    @objc private func dismissKeyboard() {
-        self.endEditing(true)
+        stackButton.snp.makeConstraints { make in
+            make.top.equalTo(stack.snp.bottom).offset(14)
+            make.left.equalTo(20)
+            make.right.equalTo(-20)
+        }
     }
 }
